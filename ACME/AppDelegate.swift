@@ -1,13 +1,20 @@
 import UIKit
 import Entities
+import FunctionalKit
+import ACMESecureStore
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
     
     var window: UIWindow?
-    let baseURL = "BASE_URL"
     
-    lazy var secureStore = ACMECredentialSecureStore.getsSecureStore()
+    lazy var secureStore = ACMECredentialSecureStore.getSecureStore()
+    lazy var appState = AppState()
+    
+    lazy var pageFactory = PageFactory(
+        secureStore: secureStore,
+        environment: appState
+    )
     
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         
@@ -15,13 +22,12 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         
         if let window = window {
             
-            let viewController = LoginPage(
-                user: User(username: "", firstName: "", lastName: ""),
-                networking: LoginNetworkingImpl(session: .shared, baseURL: baseURL),
-                secureStore: secureStore
-            )
+            if appState.loggedUser.isNil {
+                window.rootViewController = UINavigationController(rootViewController: pageFactory.getLoginPage())
+            } else {
+                window.rootViewController = UINavigationController(rootViewController: pageFactory.getContactPage())
+            }
             
-            window.rootViewController = UINavigationController(rootViewController: viewController)
             window.makeKeyAndVisible()
         }
         return true
