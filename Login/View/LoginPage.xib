@@ -11,6 +11,7 @@
     <objects>
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="LoginPage" customModule="ACME" customModuleProvider="target">
             <connections>
+                <outlet property="errorLabel" destination="CeM-2s-of4" id="VdA-2s-cSz"/>
                 <outlet property="loginButton" destination="Hlh-C6-SkQ" id="Gdt-QL-fPg"/>
                 <outlet property="passwordTextField" destination="XNE-lw-aJm" id="6l0-Gn-py7"/>
                 <outlet property="userTextField" destination="v5U-MO-mcN" id="fna-mb-o08"/>
@@ -36,6 +37,12 @@
                     <rect key="frame" x="184" y="157" width="46" height="30"/>
                     <state key="normal" title="Button"/>
                 </button>
+                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="CeM-2s-of4">
+                    <rect key="frame" x="10" y="207" width="394" height="21"/>
+                    <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                    <nil key="textColor"/>
+                    <nil key="highlightedColor"/>
+                </label>
             </subviews>
             <viewLayoutGuide key="safeArea" id="fnl-2z-Ty3"/>
             <color key="backgroundColor" systemColor="systemBackgroundColor"/>
@@ -43,11 +50,14 @@
                 <constraint firstItem="Hlh-C6-SkQ" firstAttribute="top" secondItem="XNE-lw-aJm" secondAttribute="bottom" constant="15" id="Ayr-wy-2rQ"/>
                 <constraint firstItem="XNE-lw-aJm" firstAttribute="top" secondItem="v5U-MO-mcN" secondAttribute="bottom" constant="10" id="IeF-Mu-KLv"/>
                 <constraint firstItem="Hlh-C6-SkQ" firstAttribute="centerX" secondItem="i5M-Pr-FkT" secondAttribute="centerX" id="ZLK-Lb-dqc"/>
+                <constraint firstItem="fnl-2z-Ty3" firstAttribute="trailing" secondItem="CeM-2s-of4" secondAttribute="trailing" constant="10" id="cRF-HO-cLp"/>
                 <constraint firstItem="v5U-MO-mcN" firstAttribute="top" secondItem="fnl-2z-Ty3" secondAttribute="top" constant="20" id="hsL-eI-iib"/>
                 <constraint firstItem="fnl-2z-Ty3" firstAttribute="trailing" secondItem="XNE-lw-aJm" secondAttribute="trailing" constant="10" id="pDL-PZ-shj"/>
                 <constraint firstItem="XNE-lw-aJm" firstAttribute="leading" secondItem="fnl-2z-Ty3" secondAttribute="leading" constant="10" id="s2a-86-u3U"/>
+                <constraint firstItem="CeM-2s-of4" firstAttribute="top" secondItem="Hlh-C6-SkQ" secondAttribute="bottom" constant="20" id="t3F-tc-Wis"/>
                 <constraint firstItem="fnl-2z-Ty3" firstAttribute="trailing" secondItem="v5U-MO-mcN" secondAttribute="trailing" constant="10" id="t7H-Uu-xgr"/>
                 <constraint firstItem="v5U-MO-mcN" firstAttribute="leading" secondItem="fnl-2z-Ty3" secondAttribute="leading" constant="10" id="tff-SG-3Pg"/>
+                <constraint firstItem="CeM-2s-of4" firstAttribute="leading" secondItem="fnl-2z-Ty3" secondAttribute="leading" constant="10" id="vUF-73-kwb"/>
             </constraints>
             <point key="canvasLocation" x="139" y="92"/>
         </view>

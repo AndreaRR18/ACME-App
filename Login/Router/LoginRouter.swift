@@ -1,4 +1,5 @@
 import UIKit
+import Architecture
 
 protocol LoginRouter {
     func moveOnLoginSucced()

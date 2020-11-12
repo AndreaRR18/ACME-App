@@ -3,21 +3,21 @@ import RxSwift
 import Entities
 import NetworkingCommon
 
-protocol LoginNetworking: WebRepository {
+public protocol LoginNetworking: WebRepository {
     func askToLogin(user: String, password: String) -> Observable<Result<User, ClientError>>
 }
 
-struct LoginNetworkingImpl: LoginNetworking {
+public struct LoginNetworkingImpl: LoginNetworking {
     
-    var session: URLSession
-    var baseURL: String
+    public var session: URLSession
+    public var baseURL: String
     
     public init(session: URLSession, baseURL: String) {
         self.session = session
         self.baseURL = baseURL
     }
     
-    func askToLogin(user: String, password: String) -> Observable<Result<User, ClientError>> {
+    public func askToLogin(user: String, password: String) -> Observable<Result<User, ClientError>> {
         call(endpoint: API.askToLogin(user: user, password: password))
     }
 }

@@ -2,19 +2,26 @@ import UIKit
 import RxSwift
 import RxCocoa
 import Entities
-import SecureStore
+import ACMESecureStore
+import Architecture
 
-class LoginPage: UIViewController, Page {
+public class LoginPage: UIViewController, PageType {
     
-    typealias ViewState = LoginViewState
+    public typealias ViewState = LoginViewState
+    typealias Presesnter = LoginPresenter
     
-    private(set) var presenter: LoginPresenter?
-    let user: User
+    public var presenter: LoginPresenter?
+    let environment: Environment
     let networking: LoginNetworking
-    let secureStore: SecureStore
+    let secureStore: ACMESecureStore
+    let disposeBag = DisposeBag()
     
-    init(user: User, networking: LoginNetworking, secureStore: SecureStore) {
-        self.user = user
+    public init(
+        environment: Environment,
+        networking: LoginNetworking,
+        secureStore: ACMESecureStore
+    ) {
+        self.environment = environment
         self.networking = networking
         self.secureStore = secureStore
         super.init(nibName: nil, bundle: nil)
@@ -55,23 +62,30 @@ class LoginPage: UIViewController, Page {
             }).disposed(by: disposeBag)
         }
     }
-    
-    let disposeBag = DisposeBag()
-    
-    override func viewDidLoad() {
-        super.viewDidLoad()
-        presenter = LoginPresenter(
-            loginInteractor: LoginIteractor(configuration: .init(
-                user: nil,
-                repository: networking,
-                saveCredential: secureStore.setValue
-            )),
-            router: LoginRouterImpl(router: self),
-            update: self.update)
+    @IBOutlet weak var errorLabel: UILabel! {
+        didSet {
+            errorLabel.textAlignment = .center
+        }
     }
     
-    func update(_ viewState: LoginViewState) {
+    public override func viewDidLoad() {
+        super.viewDidLoad()
+        presenter = LoginPresenter(
+            loginInteractor: LoginIteractor(
+                configuration: LoginInterarctorConfiguration(
+                    environment: environment,
+                    repository: networking,
+                    saveCredential: secureStore.set
+                )
+            ),
+            router: LoginRouterImpl(router: self),
+            update: update
+        )
+    }
+    
+    public func update(_ viewState: LoginViewState) {
         loginButton.isEnabled = viewState.buttonEnabled
+        errorLabel.text = viewState.errorMessage
     }
     
 }
