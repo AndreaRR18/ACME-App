@@ -10,10 +10,12 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     
     lazy var secureStore = ACMECredentialSecureStore.getSecureStore()
     lazy var appState = AppState()
-    
+    lazy var navigationController = UINavigationController()
+
     lazy var pageFactory = PageFactory(
         secureStore: secureStore,
-        environment: appState
+        environment: appState,
+        mainNavController: navigationController
     )
     
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
@@ -22,11 +24,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         
         if let window = window {
             
-            if appState.loggedUser.isNil {
-                window.rootViewController = UINavigationController(rootViewController: pageFactory.getLoginPage())
-            } else {
-                window.rootViewController = UINavigationController(rootViewController: pageFactory.getContactPage())
-            }
+            window.rootViewController = pageFactory.rootPage
             
             window.makeKeyAndVisible()
         }

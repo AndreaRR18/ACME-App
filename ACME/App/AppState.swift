@@ -3,9 +3,13 @@ import Architecture
 
 class AppState: Environment {
     
-    @UserDefault("logged_user", defaultValue: nil) var loggedUser: User?
+    @CustomObjectUserDefault("logged_user") var loggedUser: User?
     
     func updateLoggedUser(user: User) {
         loggedUser = user
+    }
+    
+    func deleteLoggedUser() {
+        loggedUser = nil
     }
 }
