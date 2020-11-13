@@ -71,7 +71,12 @@ fileprivate struct LoginiNetworkingMock: LoginNetworking {
 
 fileprivate struct ContactsListNetworkingMock: ContactsListNetworking {
     func getContacts() -> Observable<Result<[Contact], ClientError>> {
-        .just(.success([]))
+        .just(.success([
+            Contact(firstName: "Andrea", lastName: "Rinaldi", imageData: UIImage(named: "image")!.jpegData(compressionQuality: 1)!),
+            Contact(firstName: "Chiara", lastName: "Boccia", imageData: UIImage(named: "image2")!.jpegData(compressionQuality: 1)!),
+            Contact(firstName: "Marisa", lastName: "Bianchi", imageData: UIImage(named: "image3")!.jpegData(compressionQuality: 1)!),
+            Contact(firstName: "Giorgio", lastName: "Mastrota", imageData: UIImage(named: "image4")!.jpegData(compressionQuality: 1)!)
+        ]))
     }
     
     var session: URLSession = .shared
