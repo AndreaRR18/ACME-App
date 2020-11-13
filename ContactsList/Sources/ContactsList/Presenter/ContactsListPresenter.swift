@@ -4,7 +4,7 @@ import RxSwift
 public class ContactsListPresenter {
     var contactsListInteractor: ContactsListIteractor
     var router: ContactsListRouter
-    var loginViewState: ContactsListViewState = .starting
+    var contactsListViewState: ContactsListViewState = .starting
     var update: (ContactsListViewState) -> ()
     var removeAllLocalPassword: () -> Result<Void, Error>
     
@@ -27,12 +27,26 @@ public class ContactsListPresenter {
         router.showLogin()
     }
     
-    
     func showContactsList() {
-        
+        contactsListInteractor
+            .getContacts()
+            .subscribe(onNext: { contacts in
+                let contactsViewState = contacts.map {
+                    ConctactCellViewState(
+                        firstName: $0.firstName,
+                        lastName: $0.lastName,
+                        image: $0.imageData
+                    )
+                }
+                self.update(self.contactsListViewState.update(contacts: contactsViewState))
+            }).disposed(by: disposebag)
     }
 }
 
 fileprivate extension ContactsListViewState {
-    
+    func update(contacts: [ConctactCellViewState]) -> ContactsListViewState {
+        var newVS = self
+        newVS.contacts = contacts
+        return newVS
+    }
 }

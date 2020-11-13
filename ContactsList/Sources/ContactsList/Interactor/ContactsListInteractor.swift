@@ -2,6 +2,7 @@ import Foundation
 import RxSwift
 import FunctionalKit
 import Architecture
+import Entities
 
 struct ContactsListInterarctorConfiguration {
     let environment: Environment
@@ -17,6 +18,19 @@ class ContactsListIteractor {
     
     func logout() {
         configuration.environment.deleteLoggedUser()
+    }
+    
+    func getContacts() -> Observable<[Contact]> {
+        configuration.repository
+            .getContacts()
+            .map { result in
+                switch result {
+                case let .success(contacts):
+                    return contacts
+                case .failure:
+                    return []
+                }
+            }
     }
     
 }
