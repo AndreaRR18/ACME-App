@@ -15,8 +15,12 @@ struct CustomObjectUserDefault<T: Codable> {
             return try? JSONDecoder().decode(T.self, from: data)
         }
         set {
-            let data = try? JSONEncoder().encode(newValue)
-            UserDefaults.standard.set(data, forKey: key)
+            if let data = try? JSONEncoder().encode(newValue) {
+                UserDefaults.standard.set(data, forKey: key)
+            } else {
+                UserDefaults.standard.removeObject(forKey: key)
+            }
+            
         }
     }
 }
