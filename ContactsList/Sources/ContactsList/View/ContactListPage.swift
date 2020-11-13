@@ -17,6 +17,8 @@ public class ContactListPage: UIViewController {
     
     @IBOutlet weak var tableView: UITableView!
     
+    private lazy var adapter = ContactsListAdapter()
+    
     public init(
         environment: Environment,
         networking: ContactsListNetworking,
@@ -62,10 +64,15 @@ public class ContactListPage: UIViewController {
             ),
             update: update,
             removeAllLocalPassword: secureStore.removeAll)
+        
+        adapter.attach(tableView: tableView)
+        
+        presenter?.showContactsList()
     }
     
+    
     public func update(_ viewState: ContactsListViewState) {
-        
+        adapter.contactListViewState = viewState.contacts
     }
     
     @objc func logoutTapped() {
