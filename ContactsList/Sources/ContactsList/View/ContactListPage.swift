@@ -3,7 +3,7 @@ import FunctionalKit
 import Architecture
 import ACMESecureStore
 
-public class ContactListPage: UIViewController {
+public class ContactListPage: UIViewController, PageType {
     
     public typealias ViewState = ContactsListViewState
     public typealias Presenter = ContactsListPresenter
@@ -15,7 +15,8 @@ public class ContactListPage: UIViewController {
     let getConversationPage: Effect<Presentable>
     let secureStore: ACMESecureStore
     
-    @IBOutlet weak var tableView: UITableView!
+    private let tableView = UITableView()
+    
     private let startCallButton: UIButton = {
         let button = UIButton()
         button.setTitle("Start call", for: .normal)
@@ -41,7 +42,7 @@ public class ContactListPage: UIViewController {
         self.getConversationPage = getConversationPage
         self.secureStore = secureStore
         
-        super.init(nibName: "ContactListPage", bundle: Bundle.module)
+        super.init(nibName: nil, bundle: nil)
     }
     
     required init?(coder: NSCoder) {
@@ -77,7 +78,7 @@ public class ContactListPage: UIViewController {
         adapter.attach(tableView: tableView, presenter: presenter)
         
         presenter?.showContactsList()
-        
+        setupTableView()
         setupUIButton()
     }
     
@@ -102,6 +103,17 @@ public class ContactListPage: UIViewController {
             startCallButton.widthAnchor.constraint(equalToConstant: 200),
             startCallButton.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -10),
             startCallButton.centerXAnchor.constraint(equalTo: view.centerXAnchor)
+        ])
+    }
+    
+    private func setupTableView() {
+        tableView.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(tableView)
+        NSLayoutConstraint.activate([
+            tableView.topAnchor.constraint(equalTo: view.topAnchor),
+            tableView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            tableView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            tableView.bottomAnchor.constraint(equalTo: view.bottomAnchor)
         ])
     }
 }
