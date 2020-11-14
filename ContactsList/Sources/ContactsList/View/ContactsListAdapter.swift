@@ -30,13 +30,15 @@ extension ContactsListAdapter: UITableViewDataSource {
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        guard
-            let cell = tableView.dequeueReusableCell(withIdentifier: ContactCell.identifier) as? ContactCell
+        guard let cell = tableView.dequeueReusableCell(withIdentifier: ContactCell.identifier) as? ContactCell
             else { fatalError("Error on dequeue") }
         cell.update(contactListViewState[indexPath.row])
         return cell
     }
     
+    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+        ContactCell.height
+    }
 }
 
 extension ContactsListAdapter: UITableViewDelegate {
