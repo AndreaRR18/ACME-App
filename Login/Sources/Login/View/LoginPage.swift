@@ -45,6 +45,7 @@ public class LoginPage: UIViewController, PageType {
     
     @IBOutlet weak var loginButton: UIButton! {
         didSet {
+            loginButton.setTitle("Sign in", for: .normal)
             loginButton.addTarget(self, action: #selector(askToLogin), for: .allEvents)
         }
     }
