@@ -7,6 +7,7 @@ import RxSwift
 import NetworkingCommon
 import ContactsList
 import FunctionalKit
+import Room
 
 class PageFactory {
     
@@ -35,13 +36,13 @@ class PageFactory {
         self.showLoginIfNeeded()
     }
     
-    private(set) lazy var loginPage = LoginPage(
+    private lazy var loginPage = LoginPage(
             environment: environment,
             networking: LoginiNetworkingMock(),
             secureStore: secureStore
         )
     
-    private(set) lazy var contactsListPage = ContactListPage(
+    private lazy var contactsListPage = ContactListPage(
             environment: environment,
             networking: ContactsListNetworkingMock(),
             getLogin: .pure(loginPage),
