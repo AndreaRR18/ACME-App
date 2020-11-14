@@ -16,6 +16,15 @@ public class ContactListPage: UIViewController {
     let secureStore: ACMESecureStore
     
     @IBOutlet weak var tableView: UITableView!
+    private let startCallButton: UIButton = {
+        let button = UIButton()
+        button.setTitle("Start call", for: .normal)
+        button.backgroundColor = .black
+        button.tintColor = .white
+        button.layer.cornerRadius = 10
+        button.addTarget(self, action: #selector(startButtonTapped), for: .touchUpInside)
+        return button
+    }()
     
     private lazy var adapter = ContactsListAdapter()
     
@@ -65,13 +74,15 @@ public class ContactListPage: UIViewController {
             update: update,
             removeAllLocalPassword: secureStore.removeAll)
         
-        adapter.attach(tableView: tableView)
+        adapter.attach(tableView: tableView, presenter: presenter)
         
         presenter?.showContactsList()
+        
+        setupUIButton()
     }
     
-    
     public func update(_ viewState: ContactsListViewState) {
+        startCallButton.isHidden = viewState.isButtonEnabled.not
         adapter.contactListViewState = viewState.contacts
     }
     
@@ -79,4 +90,18 @@ public class ContactListPage: UIViewController {
         presenter?.logout()
     }
     
+    @objc func startButtonTapped() {
+        print("TAP")
+    }
+    
+    private func setupUIButton() {
+        startCallButton.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(startCallButton)
+        NSLayoutConstraint.activate([
+            startCallButton.heightAnchor.constraint(equalToConstant: 50),
+            startCallButton.widthAnchor.constraint(equalToConstant: 200),
+            startCallButton.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -10),
+            startCallButton.centerXAnchor.constraint(equalTo: view.centerXAnchor)
+        ])
+    }
 }

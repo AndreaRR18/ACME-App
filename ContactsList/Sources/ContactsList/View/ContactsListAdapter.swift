@@ -7,9 +7,11 @@ final class ContactsListAdapter: NSObject {
         didSet {
             tableView?.dataSource = self
             tableView?.delegate = self
+            tableView?.allowsMultipleSelection = true
             tableView?.register(ContactCell.self, forCellReuseIdentifier: ContactCell.identifier)
         }
     }
+    private weak var presenter: ContactsListPresenter?
     
     var contactListViewState: [ConctactCellViewState] = [] {
         didSet {
@@ -18,8 +20,9 @@ final class ContactsListAdapter: NSObject {
         }
     }
     
-    func attach(tableView: UITableView) {
+    func attach(tableView: UITableView, presenter: ContactsListPresenter?) {
         self.tableView = tableView
+        self.presenter = presenter
     }
 }
 
@@ -44,7 +47,7 @@ extension ContactsListAdapter: UITableViewDataSource {
 extension ContactsListAdapter: UITableViewDelegate {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
-        
+        presenter?.itemSelected(contactId: contactListViewState[indexPath.row].contactsId)
     }
     
 }

@@ -1,14 +1,22 @@
 import Foundation
 import RxSwift
+import Entities
 
 public class ContactsListPresenter {
     var contactsListInteractor: ContactsListIteractor
     var router: ContactsListRouter
-    var contactsListViewState: ContactsListViewState = .starting
+    var contactsListViewState: ContactsListViewState = .starting {
+        didSet {
+            update(contactsListViewState)
+        }
+    }
     var update: (ContactsListViewState) -> ()
     var removeAllLocalPassword: () -> Result<Void, Error>
     
     private let disposebag = DisposeBag()
+    
+    private var contacts: [Contact] = []
+    private var selectedContacts: [Contact] = []
     
     init(
         contactsListInteractor: ContactsListIteractor,
@@ -31,22 +39,53 @@ public class ContactsListPresenter {
         contactsListInteractor
             .getContacts()
             .subscribe(onNext: { contacts in
-                let contactsViewState = contacts.map {
-                    ConctactCellViewState(
-                        firstName: $0.firstName,
-                        lastName: $0.lastName,
-                        image: $0.imageData
-                    )
-                }
-                self.update(self.contactsListViewState.update(contacts: contactsViewState))
+                self.contacts = contacts
+                self.contactsListViewState.update(
+                    contacts: contacts.map { contact in
+                        ConctactCellViewState(
+                            firstName: contact.firstName,
+                            lastName: contact.lastName,
+                            image: contact.imageData,
+                            isSelected: self.selectedContacts.contains(contact),
+                            contactsId: contact.id
+                        )
+                    }
+                )
             }).disposed(by: disposebag)
     }
+    
+    func itemSelected(contactId: String) {
+        guard let contact = contacts.first(where: { $0.id == contactId })
+        else { return }
+        selectedContacts = contactsListInteractor
+            .getSelectedItems(contact: contact, selectedContacts: selectedContacts)
+       
+        contactsListViewState.update(
+            contacts: contacts.map { contact in
+                ConctactCellViewState(
+                    firstName: contact.firstName,
+                    lastName: contact.lastName,
+                    image: contact.imageData,
+                    isSelected: selectedContacts.contains(contact),
+                    contactsId: contact.id
+                )
+            }
+        )
+        
+        contactsListViewState.buttonIsVisible(
+            contactsListInteractor
+                .buttonIsEnabled(selectedItems: selectedContacts)
+        )
+    }
+    
 }
 
 fileprivate extension ContactsListViewState {
-    func update(contacts: [ConctactCellViewState]) -> ContactsListViewState {
-        var newVS = self
-        newVS.contacts = contacts
-        return newVS
+    mutating func update(contacts: [ConctactCellViewState]) {
+        self.contacts = contacts
+    }
+    
+    mutating func buttonIsVisible(_ bool: Bool) {
+        self.isButtonEnabled = bool
     }
 }

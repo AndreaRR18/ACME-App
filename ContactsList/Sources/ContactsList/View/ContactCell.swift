@@ -8,19 +8,28 @@ class ContactCell: UITableViewCell, Updatable {
     
     static let identifier = "ContactCell"
     static let height: CGFloat = 90
-
+    
     private var contactImageView = UIImageView()
     private var contactLabel = UILabel()
+    private var selectedLabe: UILabel = {
+        let label = UILabel()
+        label.textColor = .darkGray
+        label.text = "Added"
+        return label
+    }()
     
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         contactImageView.translatesAutoresizingMaskIntoConstraints = false
         contactLabel.translatesAutoresizingMaskIntoConstraints = false
+        selectedLabe.translatesAutoresizingMaskIntoConstraints = false
         contentView.addSubview(contactImageView)
         contentView.addSubview(contactLabel)
+        contentView.addSubview(selectedLabe)
         
         setupImage()
         setupLabel()
+        setupSelectedImage()
     }
     
     required init?(coder: NSCoder) {
@@ -30,6 +39,7 @@ class ContactCell: UITableViewCell, Updatable {
     func update(_ value: ConctactCellViewState) {
         contactImageView.image = UIImage(data: value.image)
         contactLabel.text = "\(value.firstName) \(value.lastName)"
+        selectedLabe.isHidden = value.isSelected.not
     }
     
     private func setupImage() {
@@ -44,8 +54,14 @@ class ContactCell: UITableViewCell, Updatable {
     private func setupLabel() {
         NSLayoutConstraint.activate([
             contactLabel.leadingAnchor.constraint(equalTo: contactImageView.trailingAnchor, constant: 10),
-            contactLabel.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: 10),
             contactLabel.centerYAnchor.constraint(equalTo: contentView.centerYAnchor)
+        ])
+    }
+    
+    private func setupSelectedImage() {
+        NSLayoutConstraint.activate([
+            selectedLabe.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -10),
+            selectedLabe.centerYAnchor.constraint(equalTo: contentView.centerYAnchor)
         ])
     }
 }

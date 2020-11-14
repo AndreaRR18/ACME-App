@@ -33,4 +33,23 @@ class ContactsListIteractor {
             }
     }
     
+    func getSelectedItems(contact: Contact, selectedContacts: [Contact]) -> [Contact] {
+        var newList = selectedContacts
+        if let index = selectedContacts.firstIndex(where: { contact.id == $0.id }) {
+            newList.remove(at: index)
+        } else {
+            newList.append(contact)
+        }
+        return newList
+    }
+    
+    func buttonIsEnabled(selectedItems: [Contact]) -> Bool {
+        let count = selectedItems.count
+        if count > 0 && count <= 4 {
+            return true
+        } else {
+            return false
+        }
+    }
+    
 }
