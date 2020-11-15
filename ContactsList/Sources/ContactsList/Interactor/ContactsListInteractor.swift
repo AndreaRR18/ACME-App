@@ -16,10 +16,6 @@ struct ContactsListIteractor {
         self.configuration = configuration
     }
     
-    func logout() {
-        configuration.environment.deleteLoggedUser()
-    }
-    
     func getContacts() -> Observable<[Contact]> {
         configuration.repository
             .getContacts()
@@ -33,9 +29,9 @@ struct ContactsListIteractor {
             }
     }
     
-    func getSelectedItems(contact: Contact, selectedContacts: [Contact]) -> [Contact] {
-        var newList = selectedContacts
-        if let index = selectedContacts.firstIndex(where: { contact.id == $0.id }) {
+    func getSelectedItems(contact: Contact) -> [Contact] {
+        var newList = configuration.environment.selectedContacts
+        if let index = configuration.environment.selectedContacts.firstIndex(where: { contact.id == $0.id }) {
             newList.remove(at: index)
         } else {
             newList.append(contact)
@@ -51,5 +47,4 @@ struct ContactsListIteractor {
             return false
         }
     }
-    
 }

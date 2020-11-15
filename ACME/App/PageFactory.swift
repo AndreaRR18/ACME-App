@@ -46,7 +46,15 @@ class PageFactory {
         environment: environment,
         networking: ContactsListNetworkingMock(),
         getLogin: .pure(loginPage),
-        getConversationPage: .pure(roomPage), secureStore: secureStore
+        getConversationPage: .pure(roomPage), secureStore: secureStore,
+        generateLocalContact: Effect {
+            Contact(
+                id: "\(Int.random(in: 0...99999))",
+                firstName: String.getRanomName(),
+                lastName: String.getRanomName(),
+                imageData: ["1","2","3","4"].randomElement()!.getImageName().jpegData(compressionQuality: 1)!
+            )
+        }
     )
     
     private lazy var roomPage = RoomPage(
@@ -145,5 +153,13 @@ fileprivate extension String {
         default:
             return UIImage(named: "image")!
         }
+    }
+}
+
+fileprivate extension String {
+    static func getRanomName() -> String {
+        [
+            "CaioCalogero", "Calypso", "Camelia", "Cameron", "Camilla", "Camillo", "Candida", "Candido", "Carina", "Carla", "Carlo", "Carmela", "Carmelo", "Carolina", "Cassandra", "Caterina", "Cecilia", "Cedric", "Celesta", "Celeste", "Cesara", "Cesare", "Chandra", "Chantal", "Chiara", "Cino", "Cinzia", "Cirillo", "Ciro", "Claudia", "Claudio", "Clelia", "Clemente", "Clio", "Clizia", "Cloe", "Clorinda", "Clotilde", "Concetta", "Consolata", "Contessa", "Cora", "Cordelia", "Corinna", "Cornelia", "Corrado", "Cosetta", "Cosimo", "Costantino", "Costanza", "Costanzo", "Cristal", "Cristiana", "Cristiano", "Cristina", "Cristoforo", "Cruz", "Curzio"
+        ].randomElement()!
     }
 }

@@ -15,8 +15,13 @@ public class ContactListPage: UIViewController, PageType {
     let getLogin: Effect<Presentable>
     let getConversationPage: Effect<Presentable>
     let secureStore: ACMESecureStore
+    let generateLocalContact: Effect<Contact>
     
-    private let tableView = UITableView()
+    private let tableView: UITableView = {
+        let tableView = UITableView()
+        tableView.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: 85, right: 0)
+        return tableView
+    }()
     
     private let startCallButton: UIButton = {
         let button = UIButton()
@@ -35,14 +40,15 @@ public class ContactListPage: UIViewController, PageType {
         networking: ContactsListNetworking,
         getLogin: Effect<Presentable>,
         getConversationPage: Effect<Presentable>,
-        secureStore: ACMESecureStore
+        secureStore: ACMESecureStore,
+        generateLocalContact: Effect<Contact>
     ) {
         self.environment = environment
         self.networking = networking
         self.getLogin = getLogin
         self.getConversationPage = getConversationPage
         self.secureStore = secureStore
-        
+        self.generateLocalContact = generateLocalContact
         super.init(nibName: nil, bundle: nil)
     }
     
@@ -85,10 +91,14 @@ public class ContactListPage: UIViewController, PageType {
             removeAllLocalPassword: secureStore.removeAll)
         
         adapter.attach(tableView: tableView, presenter: presenter)
-        
-        presenter?.showContactsList()
+            
         setupTableView()
         setupUIButton()
+    }
+    
+    public override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        presenter?.showContactsList()
     }
     
     public func update(_ viewState: ContactsListViewState) {
@@ -101,6 +111,7 @@ public class ContactListPage: UIViewController, PageType {
     }
     
     @objc func addLocalContact() {
+        presenter?.addNewLocalContact(generateLocalContact.run())
     }
     
     @objc func startButtonTapped() {
@@ -130,68 +141,3 @@ public class ContactListPage: UIViewController, PageType {
     }
 }
 
-fileprivate extension String {
-    static func getRanomName() -> String {
-        [
-            "CaioCalogero",
-            "Calypso",
-            "Camelia",
-            "Cameron",
-            "Camilla",
-            "Camillo",
-            "Candida",
-            "Candido",
-            "Carina",
-            "Carla",
-            "Carlo",
-            "Carmela",
-            "Carmelo",
-            "Carolina",
-            "Cassandra",
-            "Caterina",
-            "Cecilia",
-            "Cedric",
-            "Celesta",
-            "Celeste",
-            "Cesara",
-            "Cesare",
-            "Chandra",
-            "Chantal",
-            "Chiara",
-            "Cino",
-            "Cinzia",
-            "Cirillo",
-            "Ciro",
-            "Claudia",
-            "Claudio",
-            "Clelia",
-            "Clemente",
-            "Clio",
-            "Clizia",
-            "Cloe",
-            "Clorinda",
-            "Clotilde",
-            "Concetta",
-            "Consolata",
-            "Contessa",
-            "Cora",
-            "Cordelia",
-            "Corinna",
-            "Cornelia",
-            "Corrado",
-            "Cosetta",
-            "Cosimo",
-            "Costantino",
-            "Costanza",
-            "Costanzo",
-            "Cristal",
-            "Cristiana",
-            "Cristiano",
-            "Cristina",
-            "Cristoforo",
-            "Cruz",
-            "Curzio"
-            
-        ].randomElement()!
-    }
-}

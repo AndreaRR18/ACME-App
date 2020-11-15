@@ -42,6 +42,16 @@ extension ContactsListAdapter: UITableViewDataSource {
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         ContactCell.height
     }
+    
+    func tableView(_ tableView: UITableView, canEditRowAt indexPath: IndexPath) -> Bool {
+        return true
+    }
+
+    func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCell.EditingStyle, forRowAt indexPath: IndexPath) {
+        if (editingStyle == .delete) {
+            presenter?.removeLocalContact(contactListViewState[indexPath.row].contactsId)
+        }
+    }
 }
 
 extension ContactsListAdapter: UITableViewDelegate {

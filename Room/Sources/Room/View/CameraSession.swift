@@ -34,7 +34,6 @@ extension CameraSession {
     
     func frontCameraStop() {
         captureSession.stopRunning()
-        
     }
 }
 

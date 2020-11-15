@@ -19,7 +19,6 @@ public class ContactsListPresenter {
     private let disposebag = DisposeBag()
     
     private var contacts: [Contact] = []
-    private var selectedContacts: [Contact] = []
     
     init(
         environment: Environment,
@@ -36,35 +35,30 @@ public class ContactsListPresenter {
     }
     
     func logout() {
-        contactsListInteractor.logout()
+        environment.deleteLoggedUser()
+        environment.removeAll()
+        contacts = .empty
+        updateList()
         router.showLogin()
     }
         
     func showContactsList() {
         contactsListInteractor
             .getContacts()
-            .subscribe(onNext: { contacts in
-                self.contacts = contacts
-                self.contactsListViewState.update(
-                    contacts: contacts.map { contact in
-                        ConctactCellViewState(
-                            firstName: contact.firstName,
-                            lastName: contact.lastName,
-                            image: contact.imageData,
-                            isSelected: self.selectedContacts.contains(contact),
-                            contactsId: contact.id
-                        )
-                    }
-                )
+            .subscribe(onNext: { [weak self] contacts in
+                guard let self = self else { return }
+                self.contacts = contacts + self.environment.localContacts.get(or: .empty)
+                self.updateList()
             }).disposed(by: disposebag)
     }
     
     func itemSelected(contactId: String) {
         guard let contact = contacts.first(where: { $0.id == contactId })
         else { return }
-        selectedContacts = contactsListInteractor
-            .getSelectedItems(contact: contact, selectedContacts: selectedContacts)
-        environment.updateRoomsPartecipand(contacts: selectedContacts)
+        environment.updateRoomsPartecipand(
+            contacts: contactsListInteractor
+                .getSelectedItems(contact: contact)
+        )
         
         contactsListViewState.update(
             contacts: contacts.map { contact in
@@ -72,7 +66,7 @@ public class ContactsListPresenter {
                     firstName: contact.firstName,
                     lastName: contact.lastName,
                     image: contact.imageData,
-                    isSelected: selectedContacts.contains(contact),
+                    isSelected: environment.selectedContacts.contains(contact),
                     contactsId: contact.id
                 )
             }
@@ -80,12 +74,41 @@ public class ContactsListPresenter {
         
         contactsListViewState.buttonIsVisible(
             contactsListInteractor
-                .buttonIsEnabled(selectedItems: selectedContacts)
+                .buttonIsEnabled(selectedItems: environment.selectedContacts)
         )
     }
     
     func startCall() {
         router.startConversation()
+    }
+    
+    func addNewLocalContact(_ contact: Contact) {
+        environment.addLocalContact(contact)
+        showContactsList()
+    }
+    
+    func removeLocalContact(_ contactId: String) {
+        environment.removeLocalContact(contactId)
+        contactsListViewState.buttonIsVisible(
+            contactsListInteractor
+                .buttonIsEnabled(selectedItems: environment.selectedContacts)
+        )
+        
+        showContactsList()
+    }
+    
+    private func updateList() {
+        contactsListViewState.update(
+            contacts: contacts.map { contact in
+                ConctactCellViewState(
+                    firstName: contact.firstName,
+                    lastName: contact.lastName,
+                    image: contact.imageData,
+                    isSelected: environment.selectedContacts.contains(contact),
+                    contactsId: contact.id
+                )
+            }
+        )
     }
     
 }
