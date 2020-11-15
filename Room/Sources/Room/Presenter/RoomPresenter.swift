@@ -39,6 +39,14 @@ public class RoomPresenter {
             .subscribe(onNext:  { self.viewState.updateRoomContacts(contacts: $0) })
             .disposed(by: disposeBag)
     }
+    
+    func addStreamToCall(stream: Stream) {
+        //Manage adding
+    }
+    
+    func removeStreamFromCall(stream: Stream) {
+       //Manage removing
+    }
 }
 
 fileprivate extension RoomViewState {

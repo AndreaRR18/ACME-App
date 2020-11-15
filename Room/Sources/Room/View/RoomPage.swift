@@ -3,12 +3,18 @@ import UIKit
 import Architecture
 import AVFoundation
 
-public class RoomPage: UIViewController, PageType {
+public class RoomPage: UIViewController, PageType, CameraSession {
     
     public typealias ViewState = RoomViewState
     public typealias Presenter = RoomPresenter
     
-    private let session = AVCaptureSession()
+    //MARK: CameraSession
+    var previewFrame: CGRect { rearCameraView.frame}
+    var captureSession = AVCaptureSession()
+    var stillImageOutput = AVCapturePhotoOutput()
+    lazy var videoPreviewLayer: AVCaptureVideoPreviewLayer = AVCaptureVideoPreviewLayer(session: captureSession)
+    
+    //MARK: Views
     private let closeButton: UIButton = {
         let button = UIButton()
         button.setTitle("CLOSE", for: .normal)
@@ -85,9 +91,31 @@ public class RoomPage: UIViewController, PageType {
     }
     
     public override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
         presenter?.startCall()
         setupRearCamera()
         setupCloseButton()
+    }
+    
+    public override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        frontCamerarRunning()
+        
+    }
+    
+    public override func viewDidDisappear(_ animated: Bool) {
+        frontCameraStop()
+    }
+    
+    func setupLivePreview() {
+        DispatchQueue.main.async { [weak self] in
+            self?.videoPreviewLayer.frame = self?.rearCameraView.bounds ?? .zero
+        }
+        videoPreviewLayer = AVCaptureVideoPreviewLayer(session: captureSession)
+        
+        videoPreviewLayer.videoGravity = .resizeAspect
+        videoPreviewLayer.connection?.videoOrientation = .portrait
+        rearCameraView.layer.addSublayer(videoPreviewLayer)
     }
     
     public func update(_ value: RoomViewState) {
@@ -207,8 +235,8 @@ public class RoomPage: UIViewController, PageType {
         rearCameraView.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(rearCameraView)
         NSLayoutConstraint.activate([
-            rearCameraView.heightAnchor.constraint(equalToConstant: 80),
-            rearCameraView.widthAnchor.constraint(equalToConstant: 80),
+            rearCameraView.heightAnchor.constraint(equalToConstant: 120),
+            rearCameraView.widthAnchor.constraint(equalToConstant: 100),
             rearCameraView.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -30),
             rearCameraView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20)
         ])
@@ -320,7 +348,6 @@ public class RoomPage: UIViewController, PageType {
         fourthContactCameraView.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(fourthContactCameraView)
         
-        
         NSLayoutConstraint.activate([
             firstContactCameraView.heightAnchor
                 .constraint(equalToConstant: view.bounds.height/2),
@@ -331,7 +358,6 @@ public class RoomPage: UIViewController, PageType {
             firstContactCameraView.leadingAnchor
                 .constraint(equalTo: view.leadingAnchor)
         ])
-        
         
         NSLayoutConstraint.activate([
             secondContactCameraView.heightAnchor
@@ -355,7 +381,6 @@ public class RoomPage: UIViewController, PageType {
                 .constraint(equalTo: view.leadingAnchor)
         ])
         
-        
         NSLayoutConstraint.activate([
             fourthContactCameraView.heightAnchor
                 .constraint(equalToConstant: view.bounds.height/2),
@@ -372,19 +397,19 @@ public class RoomPage: UIViewController, PageType {
 
 extension RoomPage: RoomDelegate {
     public func didConnect() {
-        
+        frontCamerarRunning()
     }
     
     public func didDisconnect() {
-        
+        frontCameraStop()
     }
     
     public func didAddStrem(_ stream: Stream) {
-        
+        presenter?.addStreamToCall(stream: stream)
     }
     
     public func didRemoveSteram(_ stream: Stream) {
-        
+        presenter?.removeStreamFromCall(stream: stream)
     }
     
 }
