@@ -1,9 +1,18 @@
 import Foundation
 
-struct ACMEStream: Stream {
+public struct ACMEStream: Stream {
     
-    var hasAudio: Bool
-    var hasVideo: Bool
-    var stream: Data
+    public var hasAudio: Bool
+    public var hasVideo: Bool
+    public var stream: Data
         
+    public init(
+        hasAudio: Bool,
+        hasVideo: Bool,
+        stream: Data
+    ) {
+        self.hasAudio = hasAudio
+        self.hasVideo = hasVideo
+        self.stream = stream
+    }
 }

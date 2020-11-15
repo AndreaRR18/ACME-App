@@ -1,12 +1,14 @@
 import Foundation
 import UIKit
 import Architecture
+import AVFoundation
 
 public class RoomPage: UIViewController, PageType {
     
     public typealias ViewState = RoomViewState
     public typealias Presenter = RoomPresenter
     
+    private let session = AVCaptureSession()
     private let closeButton: UIButton = {
         let button = UIButton()
         button.setTitle("CLOSE", for: .normal)
@@ -24,36 +26,42 @@ public class RoomPage: UIViewController, PageType {
         return view
     }()
     
-    private let firstContactCameraView: UIView = {
-        let view = UIView()
-        view.backgroundColor = .blue
+    private let firstContactCameraView: ContactView = {
+        let view = ContactView()
+        view.setupUI()
         return view
     }()
     
-    private let secondContactCameraView: UIView = {
-        let view = UIView()
-        view.backgroundColor = .brown
+    private let secondContactCameraView: ContactView = {
+        let view = ContactView()
+        view.setupUI()
         return view
     }()
     
-    private let thirdContactCameraView: UIView = {
-        let view = UIView()
-        view.backgroundColor = .yellow
+    private let thirdContactCameraView: ContactView = {
+        let view = ContactView()
+        view.setupUI()
         return view
     }()
     
-    private let fourthContactCameraView: UIView = {
-        let view = UIView()
-        view.backgroundColor = .red
+    private let fourthContactCameraView: ContactView = {
+        let view = ContactView()
+        view.setupUI()
         return view
     }()
     
     public var presenter: RoomPresenter?
     public let environment: Environment
+    public let networking: RoomNetworking
     
-    public init(environment: Environment) {
+    private let room = Room()
+    
+    public init(
+        environment: Environment,
+        networking: RoomNetworking
+    ) {
         self.environment = environment
-        
+        self.networking = networking
         super.init(nibName: nil, bundle: nil)
     }
     
@@ -64,33 +72,118 @@ public class RoomPage: UIViewController, PageType {
     public override func viewDidLoad() {
         super.viewDidLoad()
         presenter = RoomPresenter(
-            interactor: RoomInteractor(),
-            router: RoomRouterImpl(
-                router: self
-            ),
+            interactor: RoomInteractor(
+                configuration: RoomInteractorConfiguration(
+                    environment: environment,
+                    repository: networking)),
+            router: RoomRouterImpl(router: self),
+            environment: environment,
             update: update
         )
+        
+        room.delegate = self
     }
     
     public override func viewWillAppear(_ animated: Bool) {
-        switch environment.selectedContacts.count {
-        case 1:
-            setupOneContact()
-        case 2:
-            setupTwoContacts()
-        case 3:
-            setupThreeContacts()
-        case 4:
-            setupFourContacts()
-        default:
-            fatalError("You can't show more than four contacts")
-        }
+        presenter?.startCall()
         setupRearCamera()
         setupCloseButton()
     }
     
     public func update(_ value: RoomViewState) {
         
+        switch value.contacts.count {
+        case 1:
+            setupOneContact()
+            let (contact, stream) = value.contacts[0].unwrap
+            firstContactCameraView
+                .update(ContactsViewState(
+                            name: contact.firstName,
+                            hasVideo: stream.hasVideo,
+                            hasAudio: stream.hasAudio,
+                            image: stream.stream)
+                )
+        case 2:
+            setupTwoContacts()
+            let (contact1, stream1) = value.contacts[0].unwrap
+            firstContactCameraView
+                .update(ContactsViewState(
+                            name: contact1.firstName,
+                            hasVideo: stream1.hasVideo,
+                            hasAudio: stream1.hasAudio,
+                            image: stream1.stream)
+                )
+            let (contact2, stream2) = value.contacts[1].unwrap
+            secondContactCameraView
+                .update(ContactsViewState(
+                            name: contact2.firstName,
+                            hasVideo: stream2.hasVideo,
+                            hasAudio: stream2.hasAudio,
+                            image: stream2.stream)
+                )
+        case 3:
+            setupThreeContacts()
+            let (contact1, stream1) = value.contacts[0].unwrap
+            firstContactCameraView
+                .update(ContactsViewState(
+                            name: contact1.firstName,
+                            hasVideo: stream1.hasVideo,
+                            hasAudio: stream1.hasAudio,
+                            image: stream1.stream)
+                )
+            let (contact2, stream2) = value.contacts[1].unwrap
+            secondContactCameraView
+                .update(ContactsViewState(
+                            name: contact2.firstName,
+                            hasVideo: stream2.hasVideo,
+                            hasAudio: stream2.hasAudio,
+                            image: stream2.stream)
+                )
+            let (contact3, stream3) = value.contacts[2].unwrap
+            thirdContactCameraView
+                .update(ContactsViewState(
+                            name: contact3.firstName,
+                            hasVideo: stream3.hasVideo,
+                            hasAudio: stream3.hasAudio,
+                            image: stream3.stream)
+                )
+        case 4:
+            setupFourContacts()
+            let (contact1, stream1) = value.contacts[0].unwrap
+            firstContactCameraView
+                .update(ContactsViewState(
+                            name: contact1.firstName,
+                            hasVideo: stream1.hasVideo,
+                            hasAudio: stream1.hasAudio,
+                            image: stream1.stream)
+                )
+            let (contact2, stream2) = value.contacts[1].unwrap
+            secondContactCameraView
+                .update(ContactsViewState(
+                            name: contact2.firstName,
+                            hasVideo: stream2.hasVideo,
+                            hasAudio: stream2.hasAudio,
+                            image: stream2.stream)
+                )
+            let (contact3, stream3) = value.contacts[2].unwrap
+            thirdContactCameraView
+                .update(ContactsViewState(
+                            name: contact3.firstName,
+                            hasVideo: stream3.hasVideo,
+                            hasAudio: stream3.hasAudio,
+                            image: stream3.stream)
+                )
+            let (contact4, stream4) = value.contacts[3].unwrap
+            fourthContactCameraView
+                .update(ContactsViewState(
+                            name: contact4.firstName,
+                            hasVideo: stream4.hasVideo,
+                            hasAudio: stream4.hasAudio,
+                            image: stream4.stream)
+                )
+        default:
+            fatalError("You can't show more than four contacts")
+        }
     }
     
     @objc func closeButtonTapped() {
@@ -116,7 +209,7 @@ public class RoomPage: UIViewController, PageType {
         NSLayoutConstraint.activate([
             rearCameraView.heightAnchor.constraint(equalToConstant: 80),
             rearCameraView.widthAnchor.constraint(equalToConstant: 80),
-            rearCameraView.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -20),
+            rearCameraView.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -30),
             rearCameraView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20)
         ])
     }
@@ -211,6 +304,7 @@ public class RoomPage: UIViewController, PageType {
     
     private func setupFourContacts() {
         
+        firstContactCameraView.removeFromSuperview()
         firstContactCameraView.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(firstContactCameraView)
         
@@ -273,4 +367,24 @@ public class RoomPage: UIViewController, PageType {
                 .constraint(equalTo: view.trailingAnchor)
         ])
     }
+    
+}
+
+extension RoomPage: RoomDelegate {
+    public func didConnect() {
+        
+    }
+    
+    public func didDisconnect() {
+        
+    }
+    
+    public func didAddStrem(_ stream: Stream) {
+        
+    }
+    
+    public func didRemoveSteram(_ stream: Stream) {
+        
+    }
+    
 }

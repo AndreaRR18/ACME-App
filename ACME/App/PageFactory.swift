@@ -37,20 +37,21 @@ class PageFactory {
     }
     
     private lazy var loginPage = LoginPage(
-            environment: environment,
-            networking: LoginiNetworkingMock(),
-            secureStore: secureStore
-        )
+        environment: environment,
+        networking: LoginiNetworkingMock(),
+        secureStore: secureStore
+    )
     
     private lazy var contactsListPage = ContactListPage(
-            environment: environment,
-            networking: ContactsListNetworkingMock(),
-            getLogin: .pure(loginPage),
-            getConversationPage: .pure(roomPage), secureStore: secureStore
-        )
+        environment: environment,
+        networking: ContactsListNetworkingMock(),
+        getLogin: .pure(loginPage),
+        getConversationPage: .pure(roomPage), secureStore: secureStore
+    )
     
     private lazy var roomPage = RoomPage(
-        environment: environment
+        environment: environment,
+        networking: RoomNetworkingMock()
     )
     
     private func showLoginIfNeeded() {
@@ -111,3 +112,38 @@ fileprivate struct ContactsListNetworkingMock: ContactsListNetworking {
     
 }
 
+fileprivate struct RoomNetworkingMock: RoomNetworking {
+    
+    var session: URLSession = .shared
+    var baseURL: String = ""
+    
+    func startCall(with contact: Contact) -> Observable<Result<ACMEStream, ClientError>> {
+        Observable
+            .just(
+                Result.success(
+                    ACMEStream(
+                        hasAudio: Bool.random(),
+                        hasVideo: Bool.random(),
+                        stream: contact.id.getImageName().jpegData(compressionQuality: 0)!)
+                ))
+    }
+    
+}
+
+fileprivate extension String {
+    func getImageName() -> UIImage {
+        guard let id = Int(self) else { return UIImage() }
+        switch id {
+        case 1:
+            return UIImage(named: "image")!
+        case 2:
+            return UIImage(named: "image2")!
+        case 3:
+            return UIImage(named: "image3")!
+        case 4:
+            return UIImage(named: "image4")!
+        default:
+            return UIImage(named: "image")!
+        }
+    }
+}

@@ -9,7 +9,7 @@ struct ContactsListInterarctorConfiguration {
     let repository: ContactsListNetworking
 }
 
-class ContactsListIteractor {
+struct ContactsListIteractor {
     let configuration: ContactsListInterarctorConfiguration
     
     init(configuration: ContactsListInterarctorConfiguration) {

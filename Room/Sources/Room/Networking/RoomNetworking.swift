@@ -4,7 +4,7 @@ import RxSwift
 import Foundation
 
 public protocol RoomNetworking: WebRepository {
-    func startCall(with: Contact) -> Observable<Result<Stream, ClientError>>
+    func startCall(with: Contact) -> Observable<Result<ACMEStream, ClientError>>
 }
 
 public struct RoomNetworkingImpl: RoomNetworking {
@@ -17,10 +17,10 @@ public struct RoomNetworkingImpl: RoomNetworking {
         self.baseURL = baseURL
     }
     
-    public func startCall(with contact: Contact) -> Observable<Result<Stream, ClientError>> {
+    public func startCall(with contact: Contact) -> Observable<Result<ACMEStream, ClientError>> {
         let response: Observable<Result<WSRoomModel.Response, ClientError>> = call(endpoint: API.startCallWith(id: contact.id))
         
-        return response.map { result -> Result<Stream, ClientError> in
+        return response.map { result -> Result<ACMEStream, ClientError> in
             result.map { response in
                 ACMEStream(
                     hasAudio: response.streamStatus.hasAudio,

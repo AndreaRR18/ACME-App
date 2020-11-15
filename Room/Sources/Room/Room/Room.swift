@@ -1,4 +1,13 @@
-public protocol Room {
-    func connect()
-    func disconnet()
+class Room {
+    
+    var delegate: RoomDelegate?
+    
+    func connect() {
+        delegate?.didConnect()
+    }
+    
+    func disconnet() {
+        delegate?.didConnect()
+    }
+    
 }
