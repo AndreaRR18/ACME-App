@@ -18,7 +18,19 @@ public struct ContactsListNetworkingImpl: ContactsListNetworking {
     }
     
     public func getContacts() -> Observable<Result<[Contact], ClientError>> {
-        call(endpoint: API.getContacts)
+        let response: Observable<Result<WSContactsModel.Response, ClientError>>  = call(endpoint: API.getContacts)
+        return response.map { result -> Result<[Contact], ClientError> in
+            result.map { contacts -> [Contact] in
+                contacts.contacts.map {
+                    Contact(
+                        id: $0.id,
+                        firstName: $0.firstName,
+                        lastName: $0.lastName,
+                        imageData: $0.avatar
+                    )
+                }
+            }
+        }
     }
 }
 

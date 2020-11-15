@@ -27,6 +27,6 @@ class ContactListRouterImpl: ContactsListRouter {
     }
     
     func startConversation() {
-        router.pushPage(getConversationPage.run(), animated: true)
+        router.presentPage(getConversationPage.run(), animated: true, nil)
     }
 }

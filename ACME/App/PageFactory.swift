@@ -46,8 +46,12 @@ class PageFactory {
             environment: environment,
             networking: ContactsListNetworkingMock(),
             getLogin: .pure(loginPage),
-            getConversationPage: .pure(UIViewController()), secureStore: secureStore
+            getConversationPage: .pure(roomPage), secureStore: secureStore
         )
+    
+    private lazy var roomPage = RoomPage(
+        environment: environment
+    )
     
     private func showLoginIfNeeded() {
         if self.environment.loggedUser.isNil {

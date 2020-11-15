@@ -1,8 +1,11 @@
 import Foundation
 import RxSwift
 import Entities
+import Architecture
 
 public class ContactsListPresenter {
+    
+    var environment: Environment
     var contactsListInteractor: ContactsListIteractor
     var router: ContactsListRouter
     var contactsListViewState: ContactsListViewState = .starting {
@@ -19,11 +22,13 @@ public class ContactsListPresenter {
     private var selectedContacts: [Contact] = []
     
     init(
+        environment: Environment,
         contactsListInteractor: ContactsListIteractor,
         router: ContactsListRouter,
         update: @escaping (ContactsListViewState) -> (),
         removeAllLocalPassword: @escaping () -> Result<Void, Error>
     ) {
+        self.environment = environment
         self.contactsListInteractor = contactsListInteractor
         self.router = router
         self.update = update
@@ -34,7 +39,7 @@ public class ContactsListPresenter {
         contactsListInteractor.logout()
         router.showLogin()
     }
-    
+        
     func showContactsList() {
         contactsListInteractor
             .getContacts()
@@ -59,7 +64,8 @@ public class ContactsListPresenter {
         else { return }
         selectedContacts = contactsListInteractor
             .getSelectedItems(contact: contact, selectedContacts: selectedContacts)
-       
+        environment.updateRoomsPartecipand(contacts: selectedContacts)
+        
         contactsListViewState.update(
             contacts: contacts.map { contact in
                 ConctactCellViewState(
@@ -76,6 +82,10 @@ public class ContactsListPresenter {
             contactsListInteractor
                 .buttonIsEnabled(selectedItems: selectedContacts)
         )
+    }
+    
+    func startCall() {
+        router.startConversation()
     }
     
 }

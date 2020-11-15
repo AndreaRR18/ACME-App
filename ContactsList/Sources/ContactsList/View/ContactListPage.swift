@@ -2,6 +2,7 @@ import UIKit
 import FunctionalKit
 import Architecture
 import ACMESecureStore
+import Entities
 
 public class ContactListPage: UIViewController, PageType {
     
@@ -60,7 +61,15 @@ public class ContactListPage: UIViewController, PageType {
             action: #selector(logoutTapped)
         )
         
+        navigationItem.rightBarButtonItem = UIBarButtonItem(
+            title: "+",
+            style: .plain,
+            target: self,
+            action: #selector(addLocalContact)
+        )
+        
         presenter = ContactsListPresenter(
+            environment: environment,
             contactsListInteractor: ContactsListIteractor(
                 configuration: .init(
                     environment: environment,
@@ -91,8 +100,11 @@ public class ContactListPage: UIViewController, PageType {
         presenter?.logout()
     }
     
+    @objc func addLocalContact() {
+    }
+    
     @objc func startButtonTapped() {
-        print("TAP")
+        presenter?.startCall()
     }
     
     private func setupUIButton() {
@@ -115,5 +127,71 @@ public class ContactListPage: UIViewController, PageType {
             tableView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
             tableView.bottomAnchor.constraint(equalTo: view.bottomAnchor)
         ])
+    }
+}
+
+fileprivate extension String {
+    static func getRanomName() -> String {
+        [
+            "CaioCalogero",
+            "Calypso",
+            "Camelia",
+            "Cameron",
+            "Camilla",
+            "Camillo",
+            "Candida",
+            "Candido",
+            "Carina",
+            "Carla",
+            "Carlo",
+            "Carmela",
+            "Carmelo",
+            "Carolina",
+            "Cassandra",
+            "Caterina",
+            "Cecilia",
+            "Cedric",
+            "Celesta",
+            "Celeste",
+            "Cesara",
+            "Cesare",
+            "Chandra",
+            "Chantal",
+            "Chiara",
+            "Cino",
+            "Cinzia",
+            "Cirillo",
+            "Ciro",
+            "Claudia",
+            "Claudio",
+            "Clelia",
+            "Clemente",
+            "Clio",
+            "Clizia",
+            "Cloe",
+            "Clorinda",
+            "Clotilde",
+            "Concetta",
+            "Consolata",
+            "Contessa",
+            "Cora",
+            "Cordelia",
+            "Corinna",
+            "Cornelia",
+            "Corrado",
+            "Cosetta",
+            "Cosimo",
+            "Costantino",
+            "Costanza",
+            "Costanzo",
+            "Cristal",
+            "Cristiana",
+            "Cristiano",
+            "Cristina",
+            "Cristoforo",
+            "Cruz",
+            "Curzio"
+            
+        ].randomElement()!
     }
 }
